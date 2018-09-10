@@ -1,0 +1,127 @@
+1. Установка Oracle Java 8 (если не установлена)
+
+sudo add-apt-repository ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get install oracle-java8-installer -y
+
+Путь к jvm: /usr/lib/jvm/java-8-oracle
+
+sudo sh -c " echo 'JAVA_HOME=\"/usr/lib/jvm/java-8-oracle\"' >> /etc/environment"
+source /etc/environment
+
+2. Установка Scala и SBT
+
+cd ~
+sudo apt-get remove scala-library scala
+
+wget www.scala-lang.org/files/archive/scala-2.12.6.deb
+sudo dpkg -i scala-*.deb
+sudo apt install -f
+rm scala-*.deb
+
+echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
+sudo apt-get update
+sudo apt-get install sbt -y
+
+3. Установить Kafka Manager
+
+cd ~
+wget https://github.com/yahoo/kafka-manager/archive/master.zip
+sudo apt install zip -y
+unzip master.zip
+sudo rm master.zip
+
+cd kafka-manager-master
+sudo sbt clean dist
+
+cd target/universal
+sudo unzip kafka-manager-*.zip
+sudo rm kafka-manager-*.zip
+sudo mv kafka-manager-* /opt/kafka-manager
+cd ~
+sudo rm -r kafka-manager-master
+
+4. Создать скрипт выключения
+
+sudo nano /opt/kafka-manager/bin/kafka-manager-stop
+
+	#!/bin/bash
+	#kill -9 $(ps aux | grep kafka-manager | grep -v grep | awk '{ print $2 }')
+	rm /opt/kafka-manager/RUNNING_PID
+
+ctrl+O, Enter, ctrl+X
+
+sudo chmod +x /opt/kafka-manager/bin/kafka-manager-stop
+
+5. Создать скрипт загрузки конфигурации (поменять адреса)
+
+sudo nano /opt/kafka-manager/bin/init
+
+	#!/bin/bash
+	sleep 30
+	export KM_URL=192.168.1.2:9000/clusters
+	export KM_CLUSTER_NAME=Kafka
+	export ZK_QUORUM=192.168.1.2:2181
+	export KAFKA_VERSION=1.0.0
+	curl ${KM_URL} --data "name=${KM_CLUSTER_NAME}&zkHosts=${ZK_QUORUM}&kafkaVersion=${KAFKA_VERSION}&jmxEnabled=true&jmxUser=&jmxPass=&jmxSsl=true&pollConsumers=true&activeOffsetCacheEnabled=true&tuning.brokerViewUpdatePeriodSeconds=30&tuning.clusterManagerThreadPoolSize=2&tuning.clusterManagerThreadPoolQueueSize=100&tuning.kafkaCommandThreadPoolSize=2&tuning.kafkaCommandThreadPoolQueueSize=100&tuning.logkafkaCommandThreadPoolSize=2&tuning.logkafkaCommandThreadPoolQueueSize=100&tuning.logkafkaUpdatePeriodSeconds=30&tuning.partitionOffsetCacheTimeoutSecs=5&tuning.brokerViewThreadPoolSize=4&tuning.brokerViewThreadPoolQueueSize=1000&tuning.offsetCacheThreadPoolSize=4&tuning.offsetCacheThreadPoolQueueSize=1000&tuning.kafkaAdminClientThreadPoolSize=4&tuning.kafkaAdminClientThreadPoolQueueSize=1000&securityProtocol=PLAINTEXT" -X POST
+	exit 0
+
+ctrl+O, Enter, ctrl+X
+
+sudo chmod +x /opt/kafka-manager/bin/init
+
+6. Создать сервис автозапуска
+
+sudo nano /etc/systemd/system/kafka-manager.service
+
+	[Unit]
+	Description=Kafka Manager
+	After=network.target
+
+	[Service]
+	Type=simple
+
+	ExecStart=/opt/kafka-manager/bin/kafka-manager -Dkafka-manager.zkhosts="localhost:2181"
+
+	ExecStop=/opt/kafka-manager/bin/kafka-manager-stop
+
+	[Install]
+	WantedBy=multi-user.target
+
+ctrl+O, Enter, ctrl+X
+
+7. Запустить сервис
+
+sudo systemctl daemon-reload
+sudo systemctl enable kafka-manager.service
+sudo systemctl restart kafka-manager.service
+
+8. Создать сервис автозагрузки конфигурации
+
+sudo nano /etc/systemd/system/kafka-manager-init.service
+
+	[Unit]
+	Description=Kafka Manager Cluster Init
+	After=network.target kafka-manager.service
+	Wants=kafka-manager.service
+
+	[Service]
+	Type=simple
+
+	ExecStart=/opt/kafka-manager/bin/init
+
+	[Install]
+	WantedBy=multi-user.target
+
+ctrl+O, Enter, ctrl+X
+
+9. Запустить сервис
+
+sudo systemctl daemon-reload
+sudo systemctl enable kafka-manager-init.service
+sudo systemctl restart kafka-manager-init.service
+
+10. Ребутнуть сервер
+
+cd sudo reboot

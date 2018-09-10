@@ -1,0 +1,64 @@
+CREATE KEYSPACE agrocalculator WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}  AND durable_writes = true;
+
+
+CREATE TABLE agrocalculator.rawmessage (
+    unit text,
+    time timestamp,
+    value text,
+    PRIMARY KEY (unit, time)
+);
+
+
+CREATE TABLE agrocalculator.message (
+    unit text,
+    time timestamp,
+    coordinate frozen<map<text, double>>,
+    geo frozen<map<text, double>>,
+    other frozen<map<text, text>>,
+    params frozen<map<text, text>>,
+    sensors frozen<map<text, double>>,
+    PRIMARY KEY (unit, time)
+);
+
+
+CREATE TABLE agrocalculator.client (
+    id uuid PRIMARY KEY,
+    name text,
+    password text
+);
+
+
+CREATE TABLE agrocalculator.unit (
+    id uuid PRIMARY KEY,
+    client uuid,
+    name text,
+    imei text
+);
+
+
+CREATE TABLE agrocalculator.geozone (
+    id uuid PRIMARY KEY,
+    client uuid,
+    name text,
+    geometry text
+);
+
+
+CREATE TABLE agrocalculator.taskresult (
+    client uuid,
+    task uuid,
+    value text,
+    time timestamp,
+    PRIMARY KEY (client, task)
+);
+
+
+CREATE TABLE agrocalculator.taskcondition (
+    client uuid,
+    task uuid,
+    topic text,
+    value text,
+    hashcode int,
+    time timestamp,
+    PRIMARY KEY (client, task)
+);

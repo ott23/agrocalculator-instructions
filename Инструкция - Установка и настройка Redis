@@ -1,0 +1,35 @@
+1. Необходимо иметь установленные java и curl
+
+2. Добавить репозиторий и установить
+
+	echo "deb http://www.apache.org/dist/cassandra/debian 311x main" | sudo tee -a /etc/apt/sources.list.d/cassandra.sources.list
+	curl https://www.apache.org/dist/cassandra/KEYS | sudo apt-key add -
+	sudo apt-get update
+	sudo apt-key adv --keyserver pool.sks-keyservers.net --recv-key A278B781FE4B2BDA
+	sudo apt-get install cassandra
+
+3. Отредактировать файл /etc/cassandra/cassandra.yaml - см. далее
+
+4. Изменить параметр seeds на внешний адрес (пример: - seeds: "192.168.1.2")
+
+	seed_provider:    
+	    - class_name: org.apache.cassandra.locator.SimpleSeedProvider
+	      parameters:
+	          - seeds: "127.0.0.1"
+
+5. Изменить параметр listen_address на адрес (пример: listenaddress: 10.242.44.55)
+
+6. Изменить параметр rpc_address на адрес (пример: rps_address: 10.242.44.55)
+
+7. Изменить параметр broadcast_rpc_address на адрес (пример: broadcast_rpc_address: 10.242.44.55)
+
+8. Запустить
+
+	sudo service cassandra start
+
+
+9. Проверить
+
+	nodetool status
+
+	cqlsh

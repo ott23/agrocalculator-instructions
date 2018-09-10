@@ -1,0 +1,176 @@
+Agrocalculator Server
+
+java -jar agrocalculator-server-*.jar
+
+порт веб-приложения --port= (по умолчанию 33380)
+порт сервера --server-port= (по умолчанию 33333)
+кластер кассандры --cassandra.contact-points= (по умолчанию localhost)
+порт кассандры --cassandra.port= (по умолчанию 9042)
+кейспейс кассандры --cassandra.key-space= (по умолчанию agrocalculator)
+
+
+
+Agrocalculator CalcNode
+
+java -jar agrocalculator-calcnode-*.jar
+
+хост сервера --server-host= (по умолчанию localhost)
+порт сервера --server-port= (по умолчанию 33333)
+порт клиента --client-port= (по умолчанию 33334)
+
+
+
+Agrocalculator RestNode
+
+java -jar agrocalculator-restnode-*.jar
+
+порт веб-приложения --server-port= (по умолчанию 32222)
+хост сервера --server-host= (по умолчанию localhost)
+порт сервера --server-port= (по умолчанию 33333)
+порт клиента --client-port= (по умолчанию 33335)
+
+
+
+Agrocalculator GateNode
+
+java -jar agrocalculator-gatenode-*.jar
+
+хост сервера --server-host= (по умолчанию localhost)
+порт сервера --server-port= (по умолчанию 33333)
+порт клиента --client-port= (по умолчанию 33336)
+
+
+
+Создать сервис автозагрузки Server
+
+nano /home/user/agrocalculator/server/start
+	
+	#!/bin/bash
+	sleep 60
+	cd /home/user/agrocalculator/server/
+	/usr/lib/jvm/java-10-oracle/bin/java -jar agrocalculator-server-*.jar --cassandra.contact-points=192.168.1.2
+
+sudo chmod +x /home/user/agrocalculator/server/start
+
+
+sudo nano /etc/systemd/system/agrocalculator-server.service
+
+	[Unit]
+	Description=Agrocalculator Server
+	After=network.target
+
+	[Service]
+	Type=simple
+
+	ExecStart=/home/user/agrocalculator/server/start
+
+	[Install]
+	WantedBy=multi-user.target
+
+ctrl+O, Enter, ctrl+X
+
+sudo systemctl daemon-reload
+sudo systemctl enable agrocalculator-server.service
+sudo systemctl restart agrocalculator-server.service
+
+
+
+Создать сервис автозагрузки GateNode
+
+nano /home/user/agrocalculator/gatenode/start
+
+	#!/bin/bash
+	sleep 60
+	cd /home/user/agrocalculator/gatenode/
+	/usr/lib/jvm/java-10-oracle/bin/java -jar agrocalculator-gatenode-*.jar
+
+sudo chmod +x /home/user/agrocalculator/gatenode/start
+
+
+sudo nano /etc/systemd/system/agrocalculator-gatenode.service
+
+	[Unit]
+	Description=Agrocalculator GateNode
+	After=network.target
+
+	[Service]
+	Type=simple
+
+	ExecStart=/home/user/agrocalculator/gatenode/start
+
+	[Install]
+	WantedBy=multi-user.target
+
+ctrl+O, Enter, ctrl+X
+
+sudo systemctl daemon-reload
+sudo systemctl enable agrocalculator-gatenode.service
+sudo systemctl restart agrocalculator-gatenode.service
+
+
+
+Создать сервис автозагрузки RestNode
+
+nano /home/user/agrocalculator/restnode/start
+
+	#!/bin/bash
+	sleep 60
+	cd /home/user/agrocalculator/restnode/
+	/usr/lib/jvm/java-10-oracle/bin/java -jar agrocalculator-restnode-*.jar
+
+sudo chmod +x /home/user/agrocalculator/restnode/start
+
+
+sudo nano /etc/systemd/system/agrocalculator-restnode.service
+
+	[Unit]
+	Description=Agrocalculator RestNode
+	After=network.target
+
+	[Service]
+	Type=simple
+
+	ExecStart=/home/user/agrocalculator/restnode/start
+
+	[Install]
+	WantedBy=multi-user.target
+
+ctrl+O, Enter, ctrl+X
+
+sudo systemctl daemon-reload
+sudo systemctl enable agrocalculator-restnode.service
+sudo systemctl restart agrocalculator-restnode.service
+
+
+
+Создать сервис автозагрузки CalcNode на другой машине
+
+nano /home/user/agrocalculator/calcnode/start
+
+	#!/bin/bash
+	sleep 60
+	cd /home/user/agrocalculator/calcnode/
+	/usr/lib/jvm/java-10-oracle/bin/java -jar agrocalculator-calcnode-*.jar --server-host=192.168.1.2
+
+sudo chmod +x /home/user/agrocalculator/calcnode/start
+
+
+sudo nano /etc/systemd/system/agrocalculator-calcnode.service
+
+	[Unit]
+	Description=Agrocalculator CalcNode
+	After=network.target
+
+	[Service]
+	Type=simple
+
+	ExecStart=/home/user/agrocalculator/calcnode/start
+
+	[Install]
+	WantedBy=multi-user.target
+
+ctrl+O, Enter, ctrl+X
+
+sudo systemctl daemon-reload
+sudo systemctl enable agrocalculator-calcnode.service
+sudo systemctl restart agrocalculator-calcnode.service

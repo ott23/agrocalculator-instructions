@@ -1,0 +1,116 @@
+1. Установка Oracle Java 8 (если не установлена)
+
+sudo add-apt-repository ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get install oracle-java8-installer -y
+
+Путь к jvm: /usr/lib/jvm/java-8-oracle
+
+sudo sh -c " echo 'JAVA_HOME=\"/usr/lib/jvm/java-8-oracle\"' >> /etc/environment"
+source /etc/environment
+
+2. Скачать Kafka
+
+cd ~cd
+wget http://mirrors.gigenet.com/apache/kafka/1.1.0/kafka_2.11-1.1.0.tgz
+sudo mkdir /opt/kafka
+sudo tar -C /opt/kafka -xzvf kafka_*.tgz  --strip-components 1
+rm kafka_*.tgz
+
+3. Добавить предпоследнюю строчку в zookeeper-server-start.sh
+
+cd /opt/kafka/bin
+sudo nano zookeeper-server-start.sh
+	
+	export JMX_PORT=${JMX_PORT:-9998}
+
+ctrl+O, Enter, ctrl+X
+
+4. Добавить предпоследнюю строчку в kafka-server-start.sh
+
+cd /opt/kafka/bin
+sudo nano kafka-server-start.sh
+	
+	export JMX_PORT=${JMX_PORT:-9999}
+
+ctrl+O, Enter, ctrl+X
+
+5. Отредактировать файл конфигурации Kafka /opt/kafka/config/server.properties или скопировть готовый файл, изменить broker.id и адреса
+
+	broker.id=0
+	listeners=LOCALHOST://:9092,INTERNAL://:9093,EXTERNAL://:39092
+	advertised.listeners=LOCALHOST://:9092,INTERNAL://10.242.44.55:9093,EXTERNAL://77.93.126.226:39092
+	listener.security.protocol.map=LOCALHOST:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+	inter.broker.listener.name=LOCALHOST
+	zookeeper.connect=localhost:2181
+	message.max.bytes=134217728
+
+ctrl+O, Enter, ctrl+X
+
+6. Создать пользователя kafka с группой kafka
+
+sudo groupadd kafka
+sudo useradd -s /bin/false -g kafka -d /opt/kafka kafka
+sudo chown kafka /opt/kafka
+
+7. Создать сервис Zookeeper
+
+sudo nano /etc/systemd/system/zookeeper.service
+
+	[Unit]
+	Description= Zookeeper
+	Requires=network.target remote-fs.target
+	After=network.target remote-fs.target
+
+	[Service]
+	Type=simple
+	PIDFile=/var/run/zookeeper.pid
+	User=kafka
+	Group=kafka
+	ExecStart=/opt/kafka/bin/zookeeper-server-start.sh /opt/kafka/config/zookeeper.properties
+	ExecStop=/opt/kafka/bin/zookeeper-server-stop.sh
+	Restart=on-failure
+	SyslogIdentifier=zookeeper
+
+	[Install]
+	WantedBy=multi-user.target
+
+ctrl+O, Enter, ctrl+X
+
+8. Запустить сервис Zookeeper
+
+sudo systemctl daemon-reload
+sudo systemctl enable zookeeper.service
+sudo systemctl restart zookeeper.service
+
+9. Создать сервис Kafka Broker
+
+sudo nano /etc/systemd/system/kafka-broker.service
+
+	[Unit]
+	Description=Apache Kafka (broker)
+	Requires=network.target remote-fs.target
+	After=network.target remote-fs.target
+
+	[Service]
+	Type=simple
+	PIDFile=/var/run/kafka.pid
+	User=kafka
+	Group=kafka
+	ExecStart=/opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties
+	ExecStop=/opt/kafka/bin/kafka-server-stop.sh
+	Restart=on-failure
+	SyslogIdentifier=kafka
+
+	[Install]
+	WantedBy=multi-user.target
+
+ctrl+O, Enter, ctrl+X
+
+10. Запустить сервис Kafka Broker
+
+sudo systemctl daemon-reload
+sudo systemctl enable kafka-broker.service
+sudo systemctl restart kafka-broker.service
+
+
