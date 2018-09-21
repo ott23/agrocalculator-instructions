@@ -1,0 +1,278 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 6.0.3.2 (Linux)"/>
+	<meta name="created" content="2018-08-28T17:09:26.836888087"/>
+	<meta name="changed" content="2018-08-29T09:50:50.647816832"/>
+	<style type="text/css">
+		@page { margin: 2cm }
+		p { margin-bottom: 0.25cm; line-height: 115% }
+	</style>
+</head>
+<body lang="ru-RU" dir="ltr">
+<p align="center" style="margin-bottom: 0cm; line-height: 100%"><font size="5" style="font-size: 18pt"><b>Общая
+структура приложения</b></font></p>
+<p align="center" style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><img src="AgroCalculator_html_88f2edbb66ff2fa8.png" name="Изображение1" align="left" width="643" height="523" border="0"/>
+<br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p align="justify" style="margin-bottom: 0cm; line-height: 150%"><font size="4" style="font-size: 14pt"><b>Внешние
+модули:</b></font></p>
+<p align="justify" style="margin-bottom: 0cm; line-height: 150%"><br/>
+
+</p>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><font size="4" style="font-size: 14pt">1.
+Apache Kafka (в т.ч. Zookeeper) — распределённый
+программный брокер сообщений.</font></p>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><font size="4" style="font-size: 14pt">2.
+Apache Cassandra — распределённая система
+управления базами данных, относящаяся
+к классу NoSQL-систем и рассчитанная на
+создание высокомасштабируемых и надёжных
+хранилищ огромных массивов данных,
+представленных в виде хэша.</font></p>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><font size="4" style="font-size: 14pt">3.
+H2 — реляционная встраиваемая
+кросплатформенная база данных, написанная
+на языке Java.</font></p>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><br/>
+<br/>
+
+</p>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><font size="4" style="font-size: 14pt"><b>Собственные
+модули:</b></font></p>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><font size="4" style="font-size: 14pt">1.
+AgroCalculator SERVER — модуль управления и
+контроля за работой остальных модулей.
+Предоставляет REST-интерфейс для подключения
+администратора. Производит обмен
+информации с модулями в формате
+зашифрованных алгоритмом DES сообщений
+через TCP/IP соединение. Хранит настройки
+всех модулей во встроенной базе данных
+H2. Запускается в единственном экземпляре.</font></p>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><font size="4" style="font-size: 14pt">2.
+AgroCalculator REST — модуль взаимодействия с
+клиентскими системами (например,
+AgroCore). Авторизация происходит по
+специальному токену (технология JWT).
+Выполняет две задачи: предоставляет
+удобный доступ к БД Cassandra, позволяет как
+отправлять новые задачи на вычислительные
+модули AgroCore CALC, так и считывать результаты
+уже посчитанных задач. Может запускаться
+в нескольких экземплярах и балансироваться,
+например, сервером NGINX. <i><span style="text-decoration: none">При
+первом запуске требуется указать адрес
+AgroCalculator SERVER, </span></i><i><span style="text-decoration: none">после
+запуска подтвердить генерацию ключа
+на сервере</span></i><i><span style="text-decoration: none">.</span></i></font></p>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><font size="4" style="font-size: 14pt"><i><span style="text-decoration: none">3.
+</span></i><span style="font-style: normal"><span style="text-decoration: none">AgroCalculator
+GATE — модуль приёма сообщений с устройств
+(или с ретранслятора). В данный момент
+полностью реализован протокол IPS1.1.
+Сообщения сохраняются в БД Cassandra. </span></span><span style="font-style: normal"><span style="text-decoration: none">Может
+запускаться в нескольких экземплярах
+и балансироваться, например, сервером
+NGINX. </span></span><i><span style="text-decoration: none">При
+первом запуске требуется указать адрес
+AgroCalculator SERVER, </span></i><i><span style="text-decoration: none">после
+запуска подтвердить генерацию ключа
+на сервере</span></i><i><span style="text-decoration: none">.</span></i></font></p>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><font size="4" style="font-size: 14pt"><span style="font-style: normal"><span style="text-decoration: none">4.
+AgroCalculator CALC — модуль ресурсозатратных
+расчётов. Принимает сообщения с
+параметрами расчётов от AgroCalculator REST по
+Kafka. Необходимые данные (например,
+координаты устройств и геозоны) берёт
+в БД Cassandra. Результаты расчётов отправляет
+на AgroCalculator REST по Kafka. </span></span><span style="font-style: normal"><span style="text-decoration: none">Может
+запускаться в нескольких экземплярах
+</span></span><span style="font-style: normal"><span style="text-decoration: none">(балансируется
+посредством Kafka). </span></span><i><span style="text-decoration: none">При
+первом запуске требуется указать адрес
+AgroCalculator SERVER, </span></i><i><span style="text-decoration: none">после
+запуска подтвердить генерацию ключа
+на сервере</span></i><i><span style="text-decoration: none">.</span></i></font></p>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><font size="4" style="font-size: 14pt"><i><span style="text-decoration: none">5.
+</span></i><span style="font-style: normal"><span style="text-decoration: none">AgroCalculator
+WEB — фронтэнд приложения AgroCalculator SERVER.
+Написан на движке Angular 5. Оперирует
+REST-интерфейсом сервера, легко может
+быть переписан на APEX. На схеме отсутствует.</span></span></font></p>
+<p align="center" style="margin-bottom: 0.28cm; line-height: 150%"><font size="5" style="font-size: 18pt"><b>Внутренняя
+структура модулей</b></font></p>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><font size="4" style="font-size: 14pt"><b>1.
+AgroCalculator SERVER</b></font></p>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><img src="AgroCalculator_html_3f6631c7d2baa406.png" name="Изображение2" align="left" width="643" height="185" border="0"/>
+<br/>
+<br/>
+
+</p>
+<ul>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%">
+	<font size="4" style="font-size: 14pt">Databases — пакет
+	взаимодействия с базами данных;</font></p>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%">
+	<font size="4" style="font-size: 14pt">Node — пакет,
+	содержащий скрипты автозапуска
+	(например, загрузка дефолтных настроек
+	для новых нод);</font></p>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%">
+	<font size="4" style="font-size: 14pt">Nodeserver — пакет
+	взаимодействия с остальными нодами,
+	основанный на библиотеке Netty;</font></p>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%">
+	<font size="4" style="font-size: 14pt">Web — пакет,
+	реализующий REST- интерфейс для
+	администрирования работы системы.</font></p>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%">
+	</p>
+</ul>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><font size="4" style="font-size: 14pt"><b>2.
+AgroCalculator REST</b></font></p>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><img src="AgroCalculator_html_2bfe1d9d676a2b3f.png" name="Изображение3" align="left" width="643" height="185" border="0"/>
+<br/>
+<br/>
+
+</p>
+<ul>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%">
+	<font size="4" style="font-size: 14pt">Databases — пакет
+	взаимодействия с базами данных;</font></p>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%">
+	<font size="4" style="font-size: 14pt">Node — пакет,
+	содержащий скрипты автозапуска и
+	командный процессор;</font></p>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%">
+	<font size="4" style="font-size: 14pt">Nodeclient — пакет
+	взаимодействия с AgroCalculator SERVER через
+	TCP/IP.</font></p>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%">
+	<font size="4" style="font-size: 14pt">Web — пакет,
+	реализующий REST интерфейс для клиентов
+	системы.</font></p>
+	<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"></p>
+</ul>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><font size="4" style="font-size: 14pt"><b>3.
+AgroCalculator GATE</b></font></p>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><img src="AgroCalculator_html_57f0f4ec44b5652a.png" name="Изображение4" align="left" width="643" height="185" border="0"/>
+<br/>
+<br/>
+
+</p>
+<ul>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%">
+	<font size="4" style="font-size: 14pt">Databases — пакет
+	взаимодействия с базами данных;</font></p>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%">
+	<font size="4" style="font-size: 14pt">Node — пакет,
+	содержащий скрипты автозапуска и
+	командный процессор;</font></p>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%">
+	<font size="4" style="font-size: 14pt">Nodeclient — пакет
+	взаимодействия с AgroCalculator SERVER через
+	TCP/IP.</font></p>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%">
+	<font size="4" style="font-size: 14pt">Gateserver — пакет,
+	реализующий сервер приёма сообщений
+	с устройств или ретранслятора, основанный
+	на библиотеке Netty.</font></p>
+</ul>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><br/>
+<br/>
+
+</p>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><font size="4" style="font-size: 14pt"><b>4.
+AgroCalculator CALC</b></font></p>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%"><img src="AgroCalculator_html_7fd6dc19799c415.png" name="Изображение5" align="left" width="643" height="185" border="0"/>
+<br/>
+<br/>
+
+</p>
+<ul>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%">
+	<font size="4" style="font-size: 14pt">Databases — пакет
+	взаимодействия с базами данных;</font></p>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%">
+	<font size="4" style="font-size: 14pt">Node — пакет,
+	содержащий скрипты автозапуска и
+	командный процессор;</font></p>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%">
+	<font size="4" style="font-size: 14pt">Nodeclient — пакет
+	взаимодействия с AgroCalculator SERVER через
+	TCP/IP.</font></p>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; line-height: 150%">
+	<font size="4" style="font-size: 14pt">Calculator — пакет,
+	содержащий вычислительный модули
+	(отдельный для каждой задачи) и управляющие
+	потоки.</font></p>
+</ul>
+<p align="center" style="margin-bottom: 0.28cm; line-height: 150%"><br/>
+<br/>
+
+</p>
+<p align="center" style="margin-bottom: 0.28cm; line-height: 150%"><font size="5" style="font-size: 18pt"><b>Стандартная
+структура пакетов</b></font></p>
+<ul>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; font-weight: normal; line-height: 150%">
+	<font size="4" style="font-size: 14pt">aspects — аспекты,
+	используемые для выноса логирования
+	из основного кода;</font></p>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; font-weight: normal; line-height: 150%">
+	<font size="4" style="font-size: 14pt">components —
+	вспомогательные классы, содержащие
+	универсальные методы, например, для
+	работы с геоданными;</font></p>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; font-weight: normal; line-height: 150%">
+	<font size="4" style="font-size: 14pt">models — модели
+	объектов;</font></p>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; font-weight: normal; line-height: 150%">
+	<font size="4" style="font-size: 14pt">modules — вычислительные
+	модули;</font></p>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; font-weight: normal; line-height: 150%">
+	<font size="4" style="font-size: 14pt">repositories — JPA и
+	Cassandra репозитории, генерирующие операции
+	с БД;</font></p>
+	<li/>
+<p align="justify" style="margin-bottom: 0.28cm; font-weight: normal; line-height: 150%">
+	<font size="5" style="font-size: 18pt"><font size="4" style="font-size: 14pt">services
+	— методы взаимодействия с БД высокого
+	уровня.</font><font size="4" style="font-size: 14pt">п</font></font></p>
+</ul>
+</body>
+</html>
