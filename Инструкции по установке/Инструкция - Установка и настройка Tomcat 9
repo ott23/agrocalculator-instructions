@@ -21,7 +21,7 @@ source /etc/environment
 
 sudo mkdir /opt/tomcat-9
 cd ~
-wget http://mirror.linux-ia64.org/apache/tomcat/tomcat-9/v9.0.10/bin/apache-tomcat-9.0.10.tar.gz
+wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.10/bin/apache-tomcat-9.0.10.tar.gz
 //wget http://ftp.wayne.edu/apache/tomcat/tomcat-9/v9.0.7/bin/apache-tomcat-9.0.7.tar.gz
 sudo tar -xzvf apache-tomcat-*.tar.gz -C /opt/tomcat-9 --strip-components=1
 rm apache-tomcat-9*.tar.gz
