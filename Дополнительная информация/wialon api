@@ -1,0 +1,13 @@
+Авторизация:
+- хост: local.tn-group.net порт 80  Uri wialon/ajax.html (http://local.tn-group.net:80/wialon/ajax.html)
+- токен: 432f6b48da09e82da251a3e30fa18aa23305744A43D643A2BC2F3042D3D91446FCBD876E
+
+- пример: http://local.tn-group.net:80/wialon/ajax.html?svc=token/login&params={"token": "432f6b48da09e82da251a3e30fa18aa23305744A43D643A2BC2F3042D3D91446FCBD876E"}
+получаем eid (сид)
+
+
+Поиск элемента по ID:
+svc=core/search_item&params={"id":<long>,
+			     "flags":<long>}
+
+- пример: http://local.tn-group.net:80/wialon/ajax.html?sid=ce01b0471c5709237c5a6eaa5997eaac&svc=core/search_item&params={"id":17660,"flags":0x00001000}

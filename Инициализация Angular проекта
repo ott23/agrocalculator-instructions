@@ -1,4 +1,0 @@
-ng new имя-проекта --style=scss
-cd имя-проекта
-npm install bootstrap
-npm install @auth0/angular-jwt
