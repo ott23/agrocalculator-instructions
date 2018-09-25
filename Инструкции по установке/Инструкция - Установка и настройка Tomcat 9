@@ -57,7 +57,7 @@ ctrl+O, Enter, ctrl+X
 
 sudo chmod -R 777 /opt/tomcat/webapps
 cd ~
-sudo ln -s /opt/tomcat-9/webapps webapps
+sudo ln -s /opt/tomcat/webapps webapps
 
 7. Запустить сервис
 
