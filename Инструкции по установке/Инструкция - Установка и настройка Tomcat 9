@@ -55,7 +55,7 @@ ctrl+O, Enter, ctrl+X
 
 6. Для удобства создать ссылку на webapps
 
-sudo chmod -R 777 /opt/tomcat-9/webapps
+sudo chmod -R 777 /opt/tomcat/webapps
 cd ~
 sudo ln -s /opt/tomcat-9/webapps webapps
 
