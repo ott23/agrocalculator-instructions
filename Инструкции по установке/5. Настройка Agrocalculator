@@ -41,17 +41,39 @@ java -jar agrocalculator-gatenode-*.jar
 
 
 
-Создать сервис автозагрузки Server
+1. Создать директории и пользователя
 
-nano /home/user/agrocalculator/server/start
+cd /opt
+mkdir agrocalculator
+cd agrocalculator
+mkdir server
+mkdir gatenode
+mkdir restnode
+mkdir calcnode
+
+sudo groupadd agrocalculator
+sudo useradd -s /bin/false -g agrocalculator -d /opt/agrocalculator agrocalculator
+sudo chown agrocalculator /opt/agrocalculator
+
+
+2. Распаковать джарники server, gatenode, restnode, calcnode в соответствующие дирректории в /opt/agrocalculator
+
+
+3. Поправить права
+
+sudo chown -R agrocalculator:agrocalculator /opt/agrocalculator
+
+
+4.Создать сервис автозагрузки Server
+
+nano /opt/agrocalculator/server/start
 	
 	#!/bin/bash
 	sleep 60
-	cd /home/user/agrocalculator/server/
-	/usr/lib/jvm/java-10-oracle/bin/java -jar agrocalculator-server-*.jar --cassandra.contact-points=192.168.1.2
+	cd /opt/agrocalculator/server/
+	java -jar agrocalculator-server-*.jar --cassandra.contact-points=192.168.1.2
 
-sudo chmod +x /home/user/agrocalculator/server/start
-
+sudo chmod +x /opt/agrocalculator/server/start
 
 sudo nano /etc/systemd/system/agrocalculator-server.service
 
@@ -61,8 +83,10 @@ sudo nano /etc/systemd/system/agrocalculator-server.service
 
 	[Service]
 	Type=simple
-
-	ExecStart=/home/user/agrocalculator/server/start
+	
+	User=agrocalculator
+	Group=agrocalculator
+	ExecStart=/opt/agrocalculator/server/start
 
 	[Install]
 	WantedBy=multi-user.target
@@ -73,19 +97,16 @@ sudo systemctl daemon-reload
 sudo systemctl enable agrocalculator-server.service
 sudo systemctl restart agrocalculator-server.service
 
+5. Создать сервис автозагрузки GateNode
 
-
-Создать сервис автозагрузки GateNode
-
-nano /home/user/agrocalculator/gatenode/start
+nano /opt/agrocalculator/gatenode/start
 
 	#!/bin/bash
 	sleep 60
-	cd /home/user/agrocalculator/gatenode/
-	/usr/lib/jvm/java-10-oracle/bin/java -jar agrocalculator-gatenode-*.jar
+	cd /opt/agrocalculator/gatenode/
+	java -jar agrocalculator-gatenode-*.jar
 
-sudo chmod +x /home/user/agrocalculator/gatenode/start
-
+sudo chmod +x /opt/agrocalculator/gatenode/start
 
 sudo nano /etc/systemd/system/agrocalculator-gatenode.service
 
@@ -96,7 +117,9 @@ sudo nano /etc/systemd/system/agrocalculator-gatenode.service
 	[Service]
 	Type=simple
 
-	ExecStart=/home/user/agrocalculator/gatenode/start
+	User=agrocalculator
+	Group=agrocalculator
+	ExecStart=/opt/agrocalculator/gatenode/start
 
 	[Install]
 	WantedBy=multi-user.target
@@ -107,19 +130,16 @@ sudo systemctl daemon-reload
 sudo systemctl enable agrocalculator-gatenode.service
 sudo systemctl restart agrocalculator-gatenode.service
 
+6. Создать сервис автозагрузки RestNode
 
-
-Создать сервис автозагрузки RestNode
-
-nano /home/user/agrocalculator/restnode/start
+nano /opt/agrocalculator/restnode/start
 
 	#!/bin/bash
 	sleep 60
-	cd /home/user/agrocalculator/restnode/
-	/usr/lib/jvm/java-10-oracle/bin/java -jar agrocalculator-restnode-*.jar
+	cd /opt/agrocalculator/restnode/
+	java -jar agrocalculator-restnode-*.jar
 
-sudo chmod +x /home/user/agrocalculator/restnode/start
-
+sudo chmod +x /opt/agrocalculator/restnode/start
 
 sudo nano /etc/systemd/system/agrocalculator-restnode.service
 
@@ -130,7 +150,9 @@ sudo nano /etc/systemd/system/agrocalculator-restnode.service
 	[Service]
 	Type=simple
 
-	ExecStart=/home/user/agrocalculator/restnode/start
+	User=agrocalculator
+	Group=agrocalculator
+	ExecStart=/opt/agrocalculator/restnode/start
 
 	[Install]
 	WantedBy=multi-user.target
@@ -141,19 +163,16 @@ sudo systemctl daemon-reload
 sudo systemctl enable agrocalculator-restnode.service
 sudo systemctl restart agrocalculator-restnode.service
 
+7. Создать сервис автозагрузки CalcNode на другой машине
 
-
-Создать сервис автозагрузки CalcNode на другой машине
-
-nano /home/user/agrocalculator/calcnode/start
+nano /opt/agrocalculator/calcnode/start
 
 	#!/bin/bash
 	sleep 60
-	cd /home/user/agrocalculator/calcnode/
-	/usr/lib/jvm/java-10-oracle/bin/java -jar agrocalculator-calcnode-*.jar --server-host=192.168.1.2
+	cd /opt/agrocalculator/calcnode/
+	java -jar agrocalculator-calcnode-*.jar --server-host=192.168.1.2
 
-sudo chmod +x /home/user/agrocalculator/calcnode/start
-
+sudo chmod +x /opt/agrocalculator/calcnode/start
 
 sudo nano /etc/systemd/system/agrocalculator-calcnode.service
 
@@ -164,7 +183,9 @@ sudo nano /etc/systemd/system/agrocalculator-calcnode.service
 	[Service]
 	Type=simple
 
-	ExecStart=/home/user/agrocalculator/calcnode/start
+	User=agrocalculator
+	Group=agrocalculator
+	ExecStart=/opt/agrocalculator/calcnode/start
 
 	[Install]
 	WantedBy=multi-user.target
