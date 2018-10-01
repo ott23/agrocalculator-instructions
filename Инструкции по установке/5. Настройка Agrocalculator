@@ -66,7 +66,7 @@ sudo chown -R agrocalculator:agrocalculator /opt/agrocalculator
 
 4.Создать сервис автозагрузки Server
 
-nano /opt/agrocalculator/server/start
+sudo nano /opt/agrocalculator/server/start
 	
 	#!/bin/bash
 	sleep 60
@@ -99,7 +99,7 @@ sudo systemctl restart agrocalculator-server.service
 
 5. Создать сервис автозагрузки GateNode
 
-nano /opt/agrocalculator/gatenode/start
+sudo nano /opt/agrocalculator/gatenode/start
 
 	#!/bin/bash
 	sleep 60
@@ -132,7 +132,7 @@ sudo systemctl restart agrocalculator-gatenode.service
 
 6. Создать сервис автозагрузки RestNode
 
-nano /opt/agrocalculator/restnode/start
+sudo nano /opt/agrocalculator/restnode/start
 
 	#!/bin/bash
 	sleep 60
@@ -165,7 +165,7 @@ sudo systemctl restart agrocalculator-restnode.service
 
 7. Создать сервис автозагрузки CalcNode на другой машине
 
-nano /opt/agrocalculator/calcnode/start
+sudo nano /opt/agrocalculator/calcnode/start
 
 	#!/bin/bash
 	sleep 60
