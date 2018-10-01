@@ -11,7 +11,7 @@ source /etc/environment
 
 2. Скачать Kafka
 
-cd ~cd
+cd ~
 wget http://mirrors.gigenet.com/apache/kafka/1.1.0/kafka_2.11-1.1.0.tgz
 sudo mkdir /opt/kafka
 sudo tar -C /opt/kafka -xzvf kafka_*.tgz  --strip-components 1
@@ -35,7 +35,7 @@ sudo nano kafka-server-start.sh
 
 ctrl+O, Enter, ctrl+X
 
-5. Отредактировать файл конфигурации Kafka /opt/kafka/config/server.properties или скопировть готовый файл, изменить broker.id и адреса
+5. Отредактировать файл конфигурации Kafka /opt/kafka/config/server.properties (отредактировать перечисленные ниже поля, установить собственные адреса и изменить broker.id) или скопировть готовый файл:
 
 	broker.id=0
 	listeners=LOCALHOST://:9092,INTERNAL://:9093,EXTERNAL://:39092

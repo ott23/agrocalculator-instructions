@@ -10,18 +10,18 @@
 
 3. Отредактировать файл /etc/cassandra/cassandra.yaml - см. далее
 
-4. Изменить параметр seeds на внешний адрес (пример: - seeds: "192.168.1.2")
+4. Изменить параметр seeds на внешний адрес сервера (пример: - seeds: "10.242.44.55")
 
 	seed_provider:    
 	    - class_name: org.apache.cassandra.locator.SimpleSeedProvider
 	      parameters:
 	          - seeds: "127.0.0.1"
 
-5. Изменить параметр listen_address на адрес (пример: listenaddress: 10.242.44.55)
+5. Изменить параметр listen_address на внешний адрес сервера (пример: listenaddress: 10.242.44.55)
 
-6. Изменить параметр rpc_address на адрес (пример: rps_address: 10.242.44.55)
+6. Изменить параметр rpc_address на внешний адрес сервера (пример: rps_address: 10.242.44.55)
 
-7. Изменить параметр broadcast_rpc_address на адрес (пример: broadcast_rpc_address: 10.242.44.55)
+7. Изменить параметр broadcast_rpc_address на внешний адрес сервера (пример: broadcast_rpc_address: 10.242.44.55)
 
 8. Запустить
 
