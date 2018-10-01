@@ -44,12 +44,12 @@ java -jar agrocalculator-gatenode-*.jar
 1. Создать директории и пользователя
 
 cd /opt
-mkdir agrocalculator
+sudo mkdir agrocalculator
 cd agrocalculator
-mkdir server
-mkdir gatenode
-mkdir restnode
-mkdir calcnode
+sudo mkdir server
+sudo mkdir gatenode
+sudo mkdir restnode
+sudo mkdir calcnode
 
 sudo groupadd agrocalculator
 sudo useradd -s /bin/false -g agrocalculator -d /opt/agrocalculator agrocalculator
